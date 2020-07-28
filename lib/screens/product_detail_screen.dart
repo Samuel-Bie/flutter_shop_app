@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'package:shop_app/models/product.dart';
+import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/providers/products_provider.dart';
 
-class ProductDetails extends StatefulWidget {
+class ProductDetails extends StatelessWidget {
   static final routeName = '/product/show';
   Product product;
 
-  ProductDetails({
-    Key key,
-    this.product,
-  }) : super(key: key);
-  @override
-  _ProductDetailsState createState() => _ProductDetailsState();
-}
-
-class _ProductDetailsState extends State<ProductDetails> {
-  @override
   Widget build(BuildContext context) {
-    this.widget.product = ModalRoute.of(context).settings.arguments as Product;
+    product = ModalRoute.of(context).settings.arguments as Product;
+    product = Provider.of<ProductsProvider>(context).findByid(product.id);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.widget.product.title),
+        title: Text(product.title),
       ),
     );
   }
