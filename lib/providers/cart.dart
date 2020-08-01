@@ -29,7 +29,7 @@ class Cart with ChangeNotifier {
   double get totalAmount {
     double total = 0;
     _items.forEach((key, value) {
-      total = total + value.quant * value.price;
+      total += value.quant * value.price;
     });
     return total;
   }
@@ -55,6 +55,13 @@ class Cart with ChangeNotifier {
             price: product.price),
       );
     }
+    notifyListeners();
+  }
+
+  void removeItem(CartItem item) {
+    print(_items.length);
+    _items.remove(item.product.id);
+    print(_items.length);
     notifyListeners();
   }
 }
