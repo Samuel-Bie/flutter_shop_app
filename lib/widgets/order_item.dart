@@ -54,7 +54,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                         ),
                       ),
                       Text(
-                        '\$${cartIten.price}x \$${cartIten.quant}',
+                        '\$${cartIten.price}x ${cartIten.quant}',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey,
