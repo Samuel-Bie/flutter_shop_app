@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/products.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validators/validators.dart';
 
@@ -64,7 +66,11 @@ class _EditproductScreenState extends State<EditproductScreen> {
   }
 
   void saveForm() {
-    if (form.currentState.validate()) form.currentState.save();
+    if (form.currentState.validate()) {
+      form.currentState.save();
+      Provider.of<Products>(context, listen: false).addProduct(targetProduct);
+      Navigator.pop(context);
+    }
     return;
   }
 
