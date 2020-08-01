@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:uuid/uuid.dart';
+import 'package:validators/validators.dart';
+
+import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/validators/validators.dart';
 
 class EditproductScreen extends StatefulWidget {
   static const routeName = '/edit/product';
@@ -12,18 +18,40 @@ class _EditproductScreenState extends State<EditproductScreen> {
   final _imageURLFocusNode = FocusNode();
   final _imageURLController = TextEditingController();
 
+  final titleValidator = MultiValidator([
+    RequiredValidator(errorText: 'Title is required'),
+    MinLengthValidator(4, errorText: 'Title must be at least 4 digits long'),
+  ]);
+
+  final _priceValidator = MultiValidator([
+    RequiredValidator(errorText: 'Price is required'),
+    PriceValidator(errorText: 'Enter a valid price'),
+  ]);
+
+  final _imageValidator = MultiValidator([
+    RequiredValidator(errorText: 'Image URL is required'),
+    UrlValidator(errorText: 'Enter a valid image url'),
+  ]);
+
+  Product targetProduct = Product(
+    id: Uuid().v4(),
+    title: '',
+    description: '',
+    price: 0.0,
+    imageUrl: '',
+  );
+
+  final form = GlobalKey<FormState>();
+
   @override
   void initState() {
-    // TODO: implement initState
     _imageURLFocusNode.addListener(_updateImageURL);
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _imageURLFocusNode.removeListener(_updateImageURL);
-
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
     _imageURLFocusNode.dispose();
@@ -31,16 +59,29 @@ class _EditproductScreenState extends State<EditproductScreen> {
   }
 
   void _updateImageURL() {
-    if (!_imageURLFocusNode.hasFocus) setState(() {});
+    if (!_imageURLFocusNode.hasFocus) if (isURL(_imageURLController.text))
+      setState(() {});
+  }
+
+  void saveForm() {
+    if (form.currentState.validate()) form.currentState.save();
+    return;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit product')),
+      appBar: AppBar(
+        title: Text('Edit product'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.save), onPressed: saveForm)
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: form,
+          autovalidate: true,
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -49,6 +90,16 @@ class _EditproductScreenState extends State<EditproductScreen> {
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) =>
                       FocusScope.of(context).requestFocus(_priceFocusNode),
+                  validator: titleValidator,
+                  onSaved: (value) {
+                    targetProduct = Product(
+                      id: targetProduct.id,
+                      title: value,
+                      description: targetProduct.description,
+                      price: targetProduct.price,
+                      imageUrl: targetProduct.imageUrl,
+                    );
+                  },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Price'),
@@ -57,12 +108,33 @@ class _EditproductScreenState extends State<EditproductScreen> {
                   focusNode: _priceFocusNode,
                   onFieldSubmitted: (_) => FocusScope.of(context)
                       .requestFocus(_descriptionFocusNode),
+                  validator: _priceValidator,
+                  onSaved: (value) {
+                    targetProduct = Product(
+                      id: targetProduct.id,
+                      title: targetProduct.title,
+                      description: targetProduct.description,
+                      price: double.parse(value),
+                      imageUrl: targetProduct.imageUrl,
+                    );
+                  },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocusNode,
+                  validator: MinLengthValidator(4,
+                      errorText: 'Description must be at least 4 digits long'),
+                  onSaved: (value) {
+                    targetProduct = Product(
+                      id: targetProduct.id,
+                      title: targetProduct.title,
+                      description: value,
+                      price: targetProduct.price,
+                      imageUrl: targetProduct.imageUrl,
+                    );
+                  },
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -86,6 +158,17 @@ class _EditproductScreenState extends State<EditproductScreen> {
                         textInputAction: TextInputAction.done,
                         controller: _imageURLController,
                         focusNode: _imageURLFocusNode,
+                        validator: _imageValidator,
+                        onFieldSubmitted: (_) => saveForm(),
+                        onSaved: (value) {
+                          targetProduct = Product(
+                            id: targetProduct.id,
+                            title: targetProduct.title,
+                            description: targetProduct.description,
+                            price: targetProduct.price,
+                            imageUrl: value,
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -98,9 +181,3 @@ class _EditproductScreenState extends State<EditproductScreen> {
     );
   }
 }
-
-// onChanged
-// onTap
-// onEditingComplete
-// onFieldSubmitted
-// onSaved
