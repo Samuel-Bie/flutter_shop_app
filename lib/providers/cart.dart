@@ -35,8 +35,9 @@ class Cart with ChangeNotifier {
   }
 
   void addItem(Product product, int quant) {
+    var newIten = null;
     if (_items.containsKey(product.id)) {
-      _items.update(
+      newIten = _items.update(
         product.id,
         (value) => CartItem(
           id: value.id,
@@ -46,7 +47,7 @@ class Cart with ChangeNotifier {
         ),
       );
     } else {
-      _items.putIfAbsent(
+      newIten = _items.putIfAbsent(
         product.id,
         () => CartItem(
             id: DateTime.now().toString(),
@@ -55,6 +56,9 @@ class Cart with ChangeNotifier {
             price: product.price),
       );
     }
+
+    if (newIten.quant <= 0) this.removeItem(newIten);
+
     notifyListeners();
   }
 
