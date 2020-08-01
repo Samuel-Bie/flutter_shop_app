@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/orders.dart';
-import 'package:shop_app/providers/products_provider.dart';
+import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/screens/user_products_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (BuildContext context) => ProductsProvider(),
+          create: (BuildContext context) => Products(),
         ),
         ChangeNotifierProvider(
           create: (BuildContext context) => Cart(),
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           ProductDetails.routeName: (ctx) => ProductDetails(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),
+          UserProductsScreen.rouuteName: (ctx) => UserProductsScreen(),
         },
       ),
     );
