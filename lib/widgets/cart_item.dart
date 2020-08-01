@@ -11,6 +11,24 @@ class CartItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) {
+        return showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text('Are you sure?'),
+                content: Text('Do you want to remove the item from the cart?'),
+                actions: <Widget>[
+                  FlatButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text('No')),
+                  FlatButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: Text('yes'))
+                ],
+              );
+            });
+      },
       background: Container(
         color: Theme.of(context).errorColor,
         child: Icon(
@@ -46,7 +64,7 @@ class CartItemWidget extends StatelessWidget {
             ),
             title: Text(item.product.title),
             subtitle: Text('\$${item.price * item.quant}'),
-            trailing: Text('\$${item.quant} x'),
+            trailing: Text('${item.quant} x'),
           ),
         ),
       ),
