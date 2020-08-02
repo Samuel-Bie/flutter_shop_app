@@ -10,6 +10,8 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
 
+    final scaffold = Scaffold.of(context);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -32,8 +34,19 @@ class ProductItem extends StatelessWidget {
                 icon: product.isFavorite
                     ? Icon(Icons.favorite)
                     : Icon(Icons.favorite_border),
-                onPressed: () {
-                  product.toogleFavoriteStatus();
+                onPressed: () async {
+                  try {
+                    await product.toogleFavoriteStatus();
+                  } catch (e) {
+                    scaffold.hideCurrentSnackBar();
+                    scaffold.showSnackBar(SnackBar(
+                      content: Text(
+                        'cannot Mark as favorite now',
+                        textAlign: TextAlign.center,
+                      ),
+                      duration: Duration(seconds: 2),
+                    ));
+                  }
                 },
               );
             },
