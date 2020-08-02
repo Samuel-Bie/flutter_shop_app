@@ -67,10 +67,11 @@ class Products with ChangeNotifier {
 
       final List<Product> loadedProducts = [];
 
-      extratedData.forEach((key, value) {
-        value["id"] = key;
-        loadedProducts.add(Product.fromMap(value));
-      });
+      if (extratedData != null)
+        extratedData.forEach((key, value) {
+          value["id"] = key;
+          loadedProducts.add(Product.fromMap(value));
+        });
 
       _items = loadedProducts;
       notifyListeners();

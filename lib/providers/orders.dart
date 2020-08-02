@@ -89,7 +89,7 @@ class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
-    return [..._orders];
+    return [..._orders.reversed];
   }
 
   Future<void> fetchAndSetOrders() async {
