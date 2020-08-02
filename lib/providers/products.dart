@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/exceptions/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -117,7 +118,13 @@ class Products with ChangeNotifier {
     }
   }
 
-  void delete(Product product) {
+  Future<void> delete(Product product) async {
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json';
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) throw HttpExeception('Product not found');
     _items.removeWhere((element) => element.id == product.id);
     notifyListeners();
   }
