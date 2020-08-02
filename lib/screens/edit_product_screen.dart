@@ -41,6 +41,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
     description: '',
     price: 0.0,
     imageUrl: '',
+    isFavorite: false,
   );
 
   final form = GlobalKey<FormState>();
@@ -121,6 +122,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                       description: targetProduct.description,
                       price: targetProduct.price,
                       imageUrl: targetProduct.imageUrl,
+                      isFavorite: targetProduct.isFavorite,
                     );
                   },
                 ),
@@ -140,6 +142,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                       description: targetProduct.description,
                       price: double.parse(value),
                       imageUrl: targetProduct.imageUrl,
+                      isFavorite: targetProduct.isFavorite,
                     );
                   },
                 ),
@@ -158,6 +161,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                       description: value,
                       price: targetProduct.price,
                       imageUrl: targetProduct.imageUrl,
+                      isFavorite: targetProduct.isFavorite,
                     );
                   },
                 ),
@@ -192,6 +196,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                             description: targetProduct.description,
                             price: targetProduct.price,
                             imageUrl: value,
+                            isFavorite: targetProduct.isFavorite,
                           );
                         },
                       ),
