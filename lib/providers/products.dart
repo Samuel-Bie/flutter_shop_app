@@ -47,13 +47,12 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  Future<void> updateList(Product product) {
+  Future<void> updateList(Product product) async {
     final index = _items.indexWhere((element) => element.id == product.id);
-    return this._addProduct(product);
-    // if (index == -1)
-    //   return this._addProduct(product);
-    // else
-    //   return this._updateProductAt(index, product);
+    if (index == -1)
+      return this._addProduct(product);
+    else
+      return this._updateProductAt(index, product);
   }
 
   Future<void> fetchAndSetproducts() async {
@@ -101,8 +100,21 @@ class Products with ChangeNotifier {
     }
   }
 
-  void _updateProductAt(index, Product product) {
-    _items[index] = product;
+  Future<void> _updateProductAt(index, Product product) async {
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json';
+    try {
+      await http.patch(
+        url,
+        headers: {},
+        body: product.toJson(),
+      );
+
+      _items[index] = product;
+      notifyListeners();
+    } on Exception catch (e) {
+      throw e;
+    }
   }
 
   void delete(Product product) {
