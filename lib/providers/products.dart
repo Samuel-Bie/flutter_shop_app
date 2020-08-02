@@ -56,8 +56,29 @@ class Products with ChangeNotifier {
     //   return this._updateProductAt(index, product);
   }
 
+  Future<void> fetchAndSetproducts() async {
+    const url = 'https://flutter-app-7798e.firebaseio.com/products.json';
+    try {
+      final response = await http.get(url);
+
+      final extratedData = jsonDecode(response.body) as Map<String, dynamic>;
+
+      final List<Product> loadedProducts = [];
+
+      extratedData.forEach((key, value) {
+        value["id"] = key;
+        loadedProducts.add(Product.fromMap(value));
+      });
+
+      _items = loadedProducts;
+      notifyListeners();
+    } on Exception catch (e) {
+      // TODO
+    }
+  }
+
   Future<void> _addProduct(Product product) async {
-    const url = 'https://flutter-app-7798e.firebaseio.com/product';
+    const url = 'https://flutter-app-7798e.firebaseio.com/products.json';
     try {
       final response = await http.post(
         url,
@@ -78,7 +99,6 @@ class Products with ChangeNotifier {
     } on Exception catch (e) {
       throw e;
     }
-
   }
 
   void _updateProductAt(index, Product product) {
