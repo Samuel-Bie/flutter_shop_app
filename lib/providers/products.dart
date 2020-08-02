@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/providers/product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -45,13 +47,42 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  void updateList(Product product) {
+  Future<void> updateList(Product product) {
     final index = _items.indexWhere((element) => element.id == product.id);
-    if (index == -1)
-      _items.add(product);
-    else
-      _items[index] = product;
-    notifyListeners();
+    return this._addProduct(product);
+    // if (index == -1)
+    //   return this._addProduct(product);
+    // else
+    //   return this._updateProductAt(index, product);
+  }
+
+  Future<void> _addProduct(Product product) async {
+    const url = 'https://flutter-app-7798e.firebaseio.com/product';
+    try {
+      final response = await http.post(
+        url,
+        headers: {},
+        body: product.toJson(),
+      );
+
+      final name = json.decode(response.body)["name"];
+      final newProduct = Product(
+        id: name,
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    } on Exception catch (e) {
+      throw e;
+    }
+
+  }
+
+  void _updateProductAt(index, Product product) {
+    _items[index] = product;
   }
 
   void delete(Product product) {
