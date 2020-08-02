@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/orders.dart';
 import 'package:shop_app/widgets/cart_item.dart';
+import 'package:toast/toast.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
+    final currentContext = context;
 
     return Scaffold(
       appBar: AppBar(title: Text('Your cart')),
@@ -37,12 +39,19 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final orders =
                           Provider.of<Orders>(context, listen: false);
-                      orders.addOrder(
-                          cart.items.values.toList(), cart.totalAmount);
-                      cart.clearCart();
+
+                      try {
+                        await orders.addOrder(
+                            cart.items.values.toList(), cart.totalAmount);
+                        cart.clearCart();
+                      } catch (e) {
+                        Toast.show("Cannot place the order now", currentContext,
+                            duration: Toast.LENGTH_SHORT,
+                            gravity: Toast.BOTTOM);
+                      }
                     },
                     child: Text('ORDER NOW',
                         style:
