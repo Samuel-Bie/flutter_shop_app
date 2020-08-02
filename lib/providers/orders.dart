@@ -97,16 +97,16 @@ class Orders with ChangeNotifier {
     try {
       final response = await http.get(url);
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-
       List<OrderItem> tempList = [];
-      data.forEach((key, value) {
-        value['id'] = key;
-        tempList.add(OrderItem.fromMap(value));
-      });
+      if (data != null)
+        data.forEach((key, value) {
+          value['id'] = key;
+          tempList.add(OrderItem.fromMap(value));
+        });
       _orders = tempList;
       notifyListeners();
     } catch (e) {
-      throw HttpExeception('Cannot place new order');
+      throw HttpExeception('Cannot get orders');
     }
   }
 
@@ -121,8 +121,11 @@ class Orders with ChangeNotifier {
     const url = 'https://flutter-app-7798e.firebaseio.com/orders.json';
 
     try {
-      await http.post(url, body: order.toJson());
-      _orders.insert(0, order);
+      final response = await http.post(url, body: order.toJson());
+      final name = jsonDecode(response.body)["name"];
+
+      final newOrder = order.copyWith(id: name);
+      _orders.insert(0, newOrder);
       notifyListeners();
     } catch (e) {
       throw HttpExeception('Cannot place new order');

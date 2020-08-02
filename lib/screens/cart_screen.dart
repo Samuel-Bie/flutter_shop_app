@@ -5,12 +5,39 @@ import 'package:shop_app/providers/orders.dart';
 import 'package:shop_app/widgets/cart_item.dart';
 import 'package:toast/toast.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
+
+  @override
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  bool _isPlacingOder = false;
+
+  Future<void> _placeOrder() async {
+    final orders = Provider.of<Orders>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
+
+    try {
+      setState(() {
+        _isPlacingOder = true;
+      });
+      await orders.addOrder(cart.items.values.toList(), cart.totalAmount);
+      cart.clearCart();
+    } catch (e) {
+      Toast.show("Cannot place the order now", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
+
+    setState(() {
+      _isPlacingOder = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
-    final currentContext = context;
 
     return Scaffold(
       appBar: AppBar(title: Text('Your cart')),
@@ -38,25 +65,8 @@ class CartScreen extends StatelessWidget {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  FlatButton(
-                    onPressed: () async {
-                      final orders =
-                          Provider.of<Orders>(context, listen: false);
-
-                      try {
-                        await orders.addOrder(
-                            cart.items.values.toList(), cart.totalAmount);
-                        cart.clearCart();
-                      } catch (e) {
-                        Toast.show("Cannot place the order now", currentContext,
-                            duration: Toast.LENGTH_SHORT,
-                            gravity: Toast.BOTTOM);
-                      }
-                    },
-                    child: Text('ORDER NOW',
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                  )
+                  BtnPlaceOrder(
+                      isPlacingOder: _isPlacingOder, placeOrder: _placeOrder)
                 ],
               ),
             ),
@@ -73,6 +83,35 @@ class CartScreen extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class BtnPlaceOrder extends StatelessWidget {
+  final bool isPlacingOder;
+  final Function placeOrder;
+
+  const BtnPlaceOrder({Key key, this.isPlacingOder, this.placeOrder})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final cart = Provider.of<Cart>(context, listen: false);
+
+    return FlatButton(
+      onPressed: (cart.items.length <= 0 || isPlacingOder) ? null : placeOrder,
+      child: cart.items.length <= 0
+          ? Text(
+              'Empty cart',
+            )
+          : isPlacingOder
+              ? Center(child: CircularProgressIndicator())
+              : Text(
+                  'ORDER NOW',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
     );
   }
 }

@@ -21,22 +21,23 @@ class Product with ChangeNotifier {
   });
 
   Future<void> toogleFavoriteStatus() async {
-    this.isFavorite = !this.isFavorite;
-    notifyListeners();
-
+    setFavorite(!this.isFavorite);
     final url =
         'https://flutter-app-7798e.firebaseio.com/products/${this.id}.json';
     try {
-      await http.patch(
+      final response = await http.patch(
         url,
-        headers: {},
         body: this.toJson(),
       );
+      if (response.statusCode >= 400) setFavorite(!this.isFavorite);
     } on Exception catch (e) {
-      this.isFavorite = !this.isFavorite;
-      notifyListeners();
-      throw e;
+      setFavorite(!this.isFavorite);
     }
+  }
+
+  void setFavorite(value) {
+    this.isFavorite = value;
+    notifyListeners();
   }
 
   Product copyWith({
