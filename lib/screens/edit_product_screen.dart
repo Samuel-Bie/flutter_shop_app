@@ -68,17 +68,33 @@ class _EditproductScreenState extends State<EditproductScreen> {
   void saveForm() {
     if (form.currentState.validate()) {
       form.currentState.save();
-      Provider.of<Products>(context, listen: false).addProduct(targetProduct);
+      Provider.of<Products>(context, listen: false).updateList(targetProduct);
       Navigator.pop(context);
     }
     return;
+  }
+
+  bool isInit = true;
+  bool isEdit = true;
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      isInit = false;
+      final args = ModalRoute.of(context).settings.arguments as Product;
+      if (args != null) {
+        targetProduct = args;
+        isEdit = true;
+        _imageURLController.text = targetProduct.imageUrl;
+      }
+    }
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit product'),
+        title: isEdit ? const Text('Edit product') : const Text('Add product'),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.save), onPressed: saveForm)
         ],
@@ -97,6 +113,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                   onFieldSubmitted: (_) =>
                       FocusScope.of(context).requestFocus(_priceFocusNode),
                   validator: titleValidator,
+                  initialValue: targetProduct.title,
                   onSaved: (value) {
                     targetProduct = Product(
                       id: targetProduct.id,
@@ -115,6 +132,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                   onFieldSubmitted: (_) => FocusScope.of(context)
                       .requestFocus(_descriptionFocusNode),
                   validator: _priceValidator,
+                  initialValue: targetProduct.price.toString(),
                   onSaved: (value) {
                     targetProduct = Product(
                       id: targetProduct.id,
@@ -132,6 +150,7 @@ class _EditproductScreenState extends State<EditproductScreen> {
                   focusNode: _descriptionFocusNode,
                   validator: MinLengthValidator(4,
                       errorText: 'Description must be at least 4 digits long'),
+                  initialValue: targetProduct.description,
                   onSaved: (value) {
                     targetProduct = Product(
                       id: targetProduct.id,
