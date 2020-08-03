@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -67,11 +68,15 @@ class Products with ChangeNotifier {
 
       final List<Product> loadedProducts = [];
 
-      if (extratedData != null)
-        extratedData.forEach((key, value) {
-          value["id"] = key;
-          loadedProducts.add(Product.fromMap(value));
-        });
+
+      if (response.statusCode == HttpStatus.accepted ||
+          response.statusCode == HttpStatus.ok) {
+        if (extratedData != null)
+          extratedData.forEach((key, value) {
+            value["id"] = key;
+            loadedProducts.add(Product.fromMap(value));
+          });
+      }
 
       _items = loadedProducts;
       notifyListeners();
