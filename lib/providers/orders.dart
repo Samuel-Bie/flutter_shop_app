@@ -7,6 +7,7 @@ import 'package:shop_app/exceptions/http_exception.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:shop_app/providers/cart.dart';
+import 'package:shop_app/providers/auth.dart';
 
 class OrderItem {
   final String id;
@@ -86,6 +87,9 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
+  final String authToken;
+
+  Orders({this.authToken});
   List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
@@ -93,9 +97,13 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    const url = 'https://flutter-app-7798e.firebaseio.com/orders.json';
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=$authToken';
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer ${Auth().token}'},
+      );
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       List<OrderItem> tempList = [];
       if (data != null)
@@ -118,7 +126,8 @@ class Orders with ChangeNotifier {
       datetime: DateTime.now(),
     );
 
-    const url = 'https://flutter-app-7798e.firebaseio.com/orders.json';
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=$authToken';
 
     try {
       final response = await http.post(url, body: order.toJson());

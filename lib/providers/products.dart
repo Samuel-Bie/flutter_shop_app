@@ -8,6 +8,11 @@ import 'package:shop_app/exceptions/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
+  final authToken;
+  Products({this.authToken,  List<Product> items = const []}) {
+    _items = items;
+  }
+
   List<Product> _items = [];
 
   List<Product> get items {
@@ -27,7 +32,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetproducts() async {
-    const url = 'https://flutter-app-7798e.firebaseio.com/products.json';
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
 
@@ -52,7 +58,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> _addProduct(Product product) async {
-    const url = 'https://flutter-app-7798e.firebaseio.com/products.json';
+    final url =
+        'https://flutter-app-7798e.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -77,7 +84,7 @@ class Products with ChangeNotifier {
 
   Future<void> _updateProductAt(index, Product product) async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json';
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=$authToken';
     try {
       await http.patch(
         url,
@@ -94,7 +101,7 @@ class Products with ChangeNotifier {
 
   Future<void> delete(Product product) async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json';
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=$authToken';
 
     final response = await http.delete(url);
 
