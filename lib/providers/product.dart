@@ -11,10 +11,7 @@ class Product with ChangeNotifier {
   final String imageUrl;
   bool isFavorite;
 
-  final authToken;
-
   Product({
-    this.authToken,
     @required this.id,
     @required this.title,
     @required this.description,
@@ -23,10 +20,10 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<void> toogleFavoriteStatus() async {
+  Future<void> toogleFavoriteStatus(String token) async {
     setFavorite(!this.isFavorite);
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${this.id}.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/products/${this.id}.json?auth=$token';
     try {
       final response = await http.patch(
         url,

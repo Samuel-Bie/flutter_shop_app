@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
@@ -35,8 +36,9 @@ class ProductItem extends StatelessWidget {
                     ? Icon(Icons.favorite)
                     : Icon(Icons.favorite_border),
                 onPressed: () async {
+                  final token = Provider.of<Auth>(context, listen: false).token;
                   try {
-                    await product.toogleFavoriteStatus();
+                    await product.toogleFavoriteStatus(token);
                   } catch (e) {
                     scaffold.hideCurrentSnackBar();
                     scaffold.showSnackBar(SnackBar(
