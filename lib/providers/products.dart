@@ -32,9 +32,11 @@ class Products with ChangeNotifier {
       return this._updateProductAt(index, product);
   }
 
-  Future<void> fetchAndSetproducts() async {
+  Future<void> fetchAndSetproducts({bool filterByUser = false}) async {
+    final filter =
+        filterByUser ? '&orderBy="creator"&equalTo="${authInfo.userId}"' : '';
     final products =
-        'https://flutter-app-7798e.firebaseio.com/products.json?auth=${authInfo.token}';
+        'https://flutter-app-7798e.firebaseio.com/products.json?auth=${authInfo.token}$filter';
 
     final favorites =
         'https://flutter-app-7798e.firebaseio.com/users/${authInfo.userId}/favorites.json?auth=${authInfo.token}';
@@ -76,7 +78,7 @@ class Products with ChangeNotifier {
       final response = await http.post(
         url,
         headers: {},
-        body: product.toJson(),
+        body: jsonEncode(product.toMap()["creator"] = authInfo.userId),
       );
 
       final name = json.decode(response.body)["name"];
