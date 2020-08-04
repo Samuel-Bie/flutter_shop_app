@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
@@ -33,7 +34,7 @@ class Auth with ChangeNotifier {
       _userId = responseData["localId"];
       _expireDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData["expiresIn"])));
-
+      autoLogout();
       notifyListeners();
     } on Exception catch (e) {
       throw e;
@@ -54,6 +55,12 @@ class Auth with ChangeNotifier {
     _token = null;
     _userId = null;
     _expireDate = null;
+
+    if (_authTimer != null) {
+      _authTimer.cancel();
+      _authTimer = null;
+    }
+
     notifyListeners();
   }
 
@@ -69,5 +76,12 @@ class Auth with ChangeNotifier {
     if (token != null && _expireDate != null) if (_expireDate
         .isAfter(DateTime.now())) return true;
     return false;
+  }
+
+  Timer _authTimer;
+  void autoLogout() {
+    if (_authTimer != null) _authTimer.cancel();
+    final timer = _expireDate.difference(DateTime.now()).inSeconds;
+    _authTimer = Timer(Duration(seconds: timer), logout);
   }
 }
