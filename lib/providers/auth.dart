@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:shop_app/exceptions/http_exception.dart';
 
 class Auth with ChangeNotifier {
@@ -36,9 +37,32 @@ class Auth with ChangeNotifier {
           .add(Duration(seconds: int.parse(responseData["expiresIn"])));
       autoLogout();
       notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      final value = jsonEncode({
+        'token': _token,
+        'userId': _userId,
+        'expireDate': _expireDate.toIso8601String(),
+      });
+      prefs.setString('auth', value);
     } on Exception catch (e) {
       throw e;
     }
+  }
+
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.get('auth');
+    if (!prefs.containsKey('auth')) return false;
+
+    final data = jsonDecode(prefs.getString('auth'));
+
+    _token = data["token"];
+    _userId = data["userId"];
+    _expireDate = DateTime.parse(data["expireDate"]);
+    notifyListeners();
+    autoLogout();
+    return isAuthenticated;
   }
 
   Future<void> signup(String email, String password) async {
@@ -60,7 +84,6 @@ class Auth with ChangeNotifier {
       _authTimer.cancel();
       _authTimer = null;
     }
-
     notifyListeners();
   }
 

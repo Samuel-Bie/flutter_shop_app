@@ -11,6 +11,7 @@ import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/screens/splash_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
 void main() {
@@ -51,7 +52,14 @@ class MyApp extends StatelessWidget {
           ),
           home: authData.isAuthenticated
               ? ProductsOverViewScreen()
-              : AuthScreen(),
+              : FutureBuilder(
+                  future: authData.tryAutoLogin(),
+                  builder: (BuildContext _, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.connectionState != ConnectionState.waiting)
+                      return AuthScreen();
+                    return SplashScreen();
+                  },
+                ),
           routes: {
             ProductDetails.routeName: (ctx) => ProductDetails(),
             CartScreen.routeName: (ctx) => CartScreen(),
