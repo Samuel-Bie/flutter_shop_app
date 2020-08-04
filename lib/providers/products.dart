@@ -55,8 +55,10 @@ class Products with ChangeNotifier {
         if (extratedData != null)
           extratedData.forEach((key, value) {
             value["id"] = key;
-            loadedProducts.add(Product.fromMap(value)
-              ..isFavorite = favoriteExtratedData == null ? false:favoriteExtratedData[key]??  false;
+            final isFv = favoriteExtratedData == null
+                ? false
+                : favoriteExtratedData[key] ?? false;
+            loadedProducts.add(Product.fromMap(value)..isFavorite = isFv);
           });
       }
 
