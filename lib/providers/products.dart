@@ -48,13 +48,6 @@ class Products with ChangeNotifier {
       final favoriteExtratedData =
           jsonDecode(favoritesResponse.body) as Map<String, dynamic>;
 
-      Map<String, dynamic> favoritesList = {};
-
-      if (favoriteExtratedData != null) if (favoriteExtratedData.length > 0) {
-        favoriteExtratedData.removeWhere((key, value) => !value);
-        favoritesList = favoriteExtratedData;
-      }
-
       final List<Product> loadedProducts = [];
 
       if (productsResponse.statusCode == HttpStatus.accepted ||
@@ -63,7 +56,7 @@ class Products with ChangeNotifier {
           extratedData.forEach((key, value) {
             value["id"] = key;
             loadedProducts.add(Product.fromMap(value)
-              ..isFavorite = favoritesList.containsKey(key));
+              ..isFavorite = favoriteExtratedData == null ? false:favoriteExtratedData[key]??  false;
           });
       }
 
