@@ -50,6 +50,13 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, url);
   }
 
+  void logout() {
+    _token = null;
+    _userId = null;
+    _expireDate = null;
+    notifyListeners();
+  }
+
   String get token {
     return _token;
   }
