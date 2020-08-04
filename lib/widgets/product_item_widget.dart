@@ -36,9 +36,12 @@ class ProductItem extends StatelessWidget {
                     ? Icon(Icons.favorite)
                     : Icon(Icons.favorite_border),
                 onPressed: () async {
-                  final token = Provider.of<Auth>(context, listen: false).token;
+                  final authProvider =
+                      Provider.of<Auth>(context, listen: false);
+
                   try {
-                    await product.toogleFavoriteStatus(token);
+                    await product.toogleFavoriteStatus(
+                        authProvider.token, authProvider.userId);
                   } catch (e) {
                     scaffold.hideCurrentSnackBar();
                     scaffold.showSnackBar(SnackBar(

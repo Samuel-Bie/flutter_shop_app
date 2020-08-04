@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shop_app/exceptions/http_exception.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
-  final authToken;
-  Products({this.authToken,  List<Product> items = const []}) {
+  final Auth authInfo;
+  Products({this.authInfo, List<Product> items = const []}) {
     _items = items;
   }
 
@@ -32,21 +33,37 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetproducts() async {
-    final url =
-        'https://flutter-app-7798e.firebaseio.com/products.json?auth=$authToken';
-    try {
-      final response = await http.get(url);
+    final products =
+        'https://flutter-app-7798e.firebaseio.com/products.json?auth=${authInfo.token}';
 
-      final extratedData = jsonDecode(response.body) as Map<String, dynamic>;
+    final favorites =
+        'https://flutter-app-7798e.firebaseio.com/users/${authInfo.userId}/favorites.json?auth=${authInfo.token}';
+    try {
+      final productsResponse = await http.get(products);
+
+      final extratedData =
+          jsonDecode(productsResponse.body) as Map<String, dynamic>;
+
+      final favoritesResponse = await http.get(favorites);
+      final favoriteExtratedData =
+          jsonDecode(favoritesResponse.body) as Map<String, dynamic>;
+
+      Map<String, dynamic> favoritesList = {};
+
+      if (favoriteExtratedData != null) if (favoriteExtratedData.length > 0) {
+        favoriteExtratedData.removeWhere((key, value) => !value);
+        favoritesList = favoriteExtratedData;
+      }
 
       final List<Product> loadedProducts = [];
 
-      if (response.statusCode == HttpStatus.accepted ||
-          response.statusCode == HttpStatus.ok) {
+      if (productsResponse.statusCode == HttpStatus.accepted ||
+          productsResponse.statusCode == HttpStatus.ok) {
         if (extratedData != null)
           extratedData.forEach((key, value) {
             value["id"] = key;
-            loadedProducts.add(Product.fromMap(value));
+            loadedProducts.add(Product.fromMap(value)
+              ..isFavorite = favoritesList.containsKey(key));
           });
       }
 
@@ -59,7 +76,7 @@ class Products with ChangeNotifier {
 
   Future<void> _addProduct(Product product) async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/products.json?auth=${authInfo.token}';
     try {
       final response = await http.post(
         url,
@@ -84,7 +101,7 @@ class Products with ChangeNotifier {
 
   Future<void> _updateProductAt(index, Product product) async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=${authInfo.token}';
     try {
       await http.patch(
         url,
@@ -101,7 +118,7 @@ class Products with ChangeNotifier {
 
   Future<void> delete(Product product) async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/products/${product.id}.json?auth=${authInfo.token}';
 
     final response = await http.delete(url);
 

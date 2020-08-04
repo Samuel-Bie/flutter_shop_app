@@ -87,9 +87,9 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final String authToken;
+  final Auth authInfo;
 
-  Orders({this.authToken});
+  Orders({this.authInfo});
   List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
@@ -98,7 +98,7 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final url =
-        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=${authInfo.token}';
     try {
       final response = await http.get(
         url,
@@ -127,7 +127,7 @@ class Orders with ChangeNotifier {
     );
 
     final url =
-        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=$authToken';
+        'https://flutter-app-7798e.firebaseio.com/orders.json?auth=${authInfo.token}';
 
     try {
       final response = await http.post(url, body: order.toJson());

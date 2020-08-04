@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
           create: (BuildContext _) => Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
-          update: (BuildContext _, value, previousPrdProvider) => Products(
-              authToken: value.token, items: previousPrdProvider.items),
+          update: (BuildContext _, value, previousPrdProvider) =>
+              Products(authInfo: value, items: previousPrdProvider.items),
           create: (BuildContext _) => Products(),
         ),
         ChangeNotifierProvider(
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           update: (BuildContext _, Auth value, Orders __) => Orders(
-            authToken: value.token,
+            authInfo: value,
           ),
           create: (BuildContext _) => Orders(),
         ),

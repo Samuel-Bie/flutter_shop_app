@@ -20,14 +20,14 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<void> toogleFavoriteStatus(String token) async {
+  Future<void> toogleFavoriteStatus(String token, String userId) async {
     setFavorite(!this.isFavorite);
     final url =
-        'https://flutter-app-7798e.firebaseio.com/products/${this.id}.json?auth=$token';
+        'https://flutter-app-7798e.firebaseio.com/users/$userId/favorites/${this.id}.json?auth=$token';
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: this.toJson(),
+        body: jsonEncode(this.isFavorite),
       );
       if (response.statusCode >= 400) setFavorite(!this.isFavorite);
     } on Exception catch (e) {
@@ -46,7 +46,6 @@ class Product with ChangeNotifier {
     String description,
     double price,
     String imageUrl,
-    bool isFavorite,
   }) {
     return Product(
       id: id ?? this.id,
@@ -54,7 +53,6 @@ class Product with ChangeNotifier {
       description: description ?? this.description,
       price: price ?? this.price,
       imageUrl: imageUrl ?? this.imageUrl,
-      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -65,7 +63,6 @@ class Product with ChangeNotifier {
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
-      'isFavorite': isFavorite,
     };
   }
 
@@ -78,7 +75,6 @@ class Product with ChangeNotifier {
       description: map['description'],
       price: map['price'],
       imageUrl: map['imageUrl'],
-      isFavorite: map['isFavorite'],
     );
   }
 
@@ -88,7 +84,7 @@ class Product with ChangeNotifier {
 
   @override
   String toString() {
-    return 'Product(id: $id, title: $title, description: $description, price: $price, imageUrl: $imageUrl, isFavorite: $isFavorite)';
+    return 'Product(id: $id, title: $title, description: $description, price: $price, imageUrl: $imageUrl ';
   }
 
   @override
@@ -100,8 +96,7 @@ class Product with ChangeNotifier {
         o.title == title &&
         o.description == description &&
         o.price == price &&
-        o.imageUrl == imageUrl &&
-        o.isFavorite == isFavorite;
+        o.imageUrl == imageUrl;
   }
 
   @override
@@ -110,7 +105,6 @@ class Product with ChangeNotifier {
         title.hashCode ^
         description.hashCode ^
         price.hashCode ^
-        imageUrl.hashCode ^
-        isFavorite.hashCode;
+        imageUrl.hashCode;
   }
 }

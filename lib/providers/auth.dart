@@ -54,6 +54,10 @@ class Auth with ChangeNotifier {
     return _token;
   }
 
+  String get userId {
+    return _userId;
+  }
+
   bool get isAuthenticated {
     if (token != null && _expireDate != null) if (_expireDate
         .isAfter(DateTime.now())) return true;
