@@ -13,17 +13,16 @@ class ProductDetails extends StatelessWidget {
     product = Provider.of<Products>(context).findByid(product.id);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 300,
-              width: double.infinity,
-              child: Hero(
+      // appBar: AppBar(
+      // ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(product.title, textAlign: TextAlign.start,),
+              background: Hero(
                 tag: product.id,
                 child: Image.network(
                   product.imageUrl,
@@ -31,26 +30,34 @@ class ProductDetails extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Text(product.title,
-                      style: Theme.of(context).textTheme.headline4),
-                  Spacer(),
-                  Text('\$${product.price}',
-                      style: Theme.of(context).textTheme.headline6)
-                ],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              SizedBox(
+                height: 10,
               ),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-          ],
-        ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(product.title,
+                        style: Theme.of(context).textTheme.headline5),
+                    Spacer(),
+                    Text('\$${product.price}',
+                        style: Theme.of(context).textTheme.headline6)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(product.description),
+              )
+            ]),
+          ),
+        ],
       ),
     );
   }
