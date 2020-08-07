@@ -75,7 +75,7 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, url);
   }
 
-  void logout() {
+  Future<void> logout() async {
     _token = null;
     _userId = null;
     _expireDate = null;
@@ -84,7 +84,11 @@ class Auth with ChangeNotifier {
       _authTimer.cancel();
       _authTimer = null;
     }
+
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 
   String get token {
