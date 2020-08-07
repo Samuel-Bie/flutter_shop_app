@@ -8,7 +8,8 @@ class ProductDetails extends StatelessWidget {
   static final routeName = '/product/show';
 
   Widget build(BuildContext context) {
-    var product = ModalRoute.of(context).settings.arguments as Product;
+    var product = ModalRoute.of(context).settings.arguments
+        as Product; //Passing as Arguments
     product = Provider.of<Products>(context).findByid(product.id);
 
     return Scaffold(
@@ -22,9 +23,12 @@ class ProductDetails extends StatelessWidget {
             Container(
               height: 300,
               width: double.infinity,
-              child: Image.network(
-                product.imageUrl,
-                fit: BoxFit.cover,
+              child: Hero(
+                tag: product.id,
+                child: Image.network(
+                  product.imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             SizedBox(
