@@ -13,51 +13,45 @@ class ProductDetails extends StatelessWidget {
     product = Provider.of<Products>(context).findByid(product.id);
 
     return Scaffold(
-      // appBar: AppBar(
-      // ),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(product.title, textAlign: TextAlign.start,),
-              background: Hero(
-                tag: product.id,
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 300.0,
+              title: Text(product.title),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Hero(
+                  tag: product.id,
+                  child: Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              SizedBox(
-                height: 10,
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(product.title,
+                            style: Theme.of(context).textTheme.headline5),
+                        // Spacer(),
+                        Text('\$${product.price}',
+                            style: Theme.of(context).textTheme.headline6),
+                        Text(product.description)
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    Text(product.title,
-                        style: Theme.of(context).textTheme.headline5),
-                    Spacer(),
-                    Text('\$${product.price}',
-                        style: Theme.of(context).textTheme.headline6)
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(product.description),
-              )
-            ]),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
