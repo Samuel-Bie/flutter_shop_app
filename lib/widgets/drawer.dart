@@ -26,8 +26,8 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.payment),
             title: Text('Orders'),
             onTap: () =>
-            Navigator.pushReplacement(context, CustomRoute(builder: (ctx) => OrdersScreen()))
-                // Navigator.pushReplacementNamed(context, OrdersScreen.routeName),
+            // Navigator.pushReplacement(context, CustomRoute(builder: (ctx) => OrdersScreen()))
+                Navigator.pushReplacementNamed(context, OrdersScreen.routeName),
           ),
           Divider(),
           ListTile(
