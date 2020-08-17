@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/helpers/custom_route.dart';
 import 'package:shop_app/providers/auth.dart';
 
 import 'package:shop_app/providers/cart.dart';
@@ -49,6 +50,12 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.orange,
             fontFamily: 'Lato',
             visualDensity: VisualDensity.adaptivePlatformDensity,
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.ios: CustomPageTransitionBuilder(),
+              }
+            ),
           ),
           home: authData.isAuthenticated
               ? ProductsOverViewScreen()

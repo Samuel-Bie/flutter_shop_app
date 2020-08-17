@@ -22,36 +22,37 @@ class OrdersScreen extends StatelessWidget {
         child: AppDrawer(),
       ),
       body: RefreshIndicator(
-          onRefresh: () {
-            return _loadOrders(context);
-          },
-          child: FutureBuilder(
-            future:
-                Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting)
-                return Center(child: CircularProgressIndicator());
-              else {
-                if (snapshot.error != null) {
-                  return Center(child: Text('Error fetching orders'));
-                } else {
-                  return Consumer<Orders>(
-                    builder:
-                        (BuildContext context, ordersProvider, Widget child) {
-                      return ListView.builder(
-                        itemCount: ordersProvider.orders.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return OrderItemWidget(
-                            order: ordersProvider.orders[index],
-                          );
-                        },
-                      );
-                    },
-                  );
-                }
+        onRefresh: () {
+          return _loadOrders(context);
+        },
+        child: FutureBuilder(
+          future:
+              Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Center(child: CircularProgressIndicator());
+            else {
+              if (snapshot.error != null) {
+                return Center(child: Text('Error fetching orders'));
+              } else {
+                return Consumer<Orders>(
+                  builder:
+                      (BuildContext context, ordersProvider, Widget child) {
+                    return ListView.builder(
+                      itemCount: ordersProvider.orders.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return OrderItemWidget(
+                          order: ordersProvider.orders[index],
+                        );
+                      },
+                    );
+                  },
+                );
               }
-            },
-          )),
+            }
+          },
+        ),
+      ),
     );
   }
 }
